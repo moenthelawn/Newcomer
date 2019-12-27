@@ -14,6 +14,7 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
     private EditText editTextMobile;
     private TextView accountSignUp;
+    UserData userData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
 
         editTextMobile = findViewById(R.id.editTextMobile);
         accountSignUp = findViewById(R.id.textView3);
-
-
+        userData = (UserData) getApplicationContext();
 
         accountSignUp.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 //Then we go to the account sign up page
@@ -45,11 +46,12 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                userData.setPhoneNumber(mobile);
+
                 Intent intent = new Intent(MainActivity.this, authentication.class);
                 intent.putExtra("mobile", mobile);
                 startActivity(intent);
             }
         });
     }
-
 }
