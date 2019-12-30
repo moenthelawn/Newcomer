@@ -9,7 +9,7 @@
             android:type="radial"
             android:gradientRadius="10%p"
             android:startColor="#0DF6EE19"
-            android:endColor="#56115EDE" />
+            android:endColor="#0DF6EE19" />
     <path
             android:fillColor="#0073FF"
             android:pathData="M22,32

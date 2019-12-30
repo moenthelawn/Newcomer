@@ -6,7 +6,7 @@ public class UserData extends Application {
     String phoneNumber;
     Integer radiusDistance;
     public UserData(){
-        radiusDistance = 15; //Default value for the radius of the current map that can be used to sync with other users
+        radiusDistance = 3; //Default value for the radius of the current map that can be used to sync with other users
 
     }
     public void setPhoneNumber(String mobile) {
