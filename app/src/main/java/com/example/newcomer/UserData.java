@@ -18,4 +18,5 @@ public class UserData extends Application {
     public Integer getRadiusDistance(){
         return this.radiusDistance;
     }
+
 }

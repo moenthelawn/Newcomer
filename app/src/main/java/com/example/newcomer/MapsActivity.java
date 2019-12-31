@@ -1,15 +1,18 @@
 package com.example.newcomer;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -24,7 +27,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, textbox.OnFragmentInteractionListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, distanceDisplay.OnFragmentInteractionListener,textbox.OnFragmentInteractionListener {
 
     private static final String TEXTDISPLAY_FRAGMENT = "Text Display";
 
@@ -36,9 +39,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean permissionIsGranted = false;
     private ImageButton backButton;
     private SeekBar location_radius;
-    Circle circle;
-    UserData userData;
 
+
+    Circle circle;
+
+    UserData userData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         location_radius = (SeekBar) findViewById(R.id.seekBar);
         userData = (UserData) getApplicationContext();
-        backButton = (ImageButton) findViewById(R.id.imageButton3);
 
         //Initialize the parameters around the user data
         location_radius.setKeyProgressIncrement(1);
@@ -59,18 +63,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         location_radius.setMax(30); //100 kms
         location_radius.setProgress(radius);
-
+        setDistance_display(radius);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Set the back button and then we update the radius as needed
-                userData.setRadiusDistance(location_radius.getProgress()/1000); //Convert it to km
-            }
-        });
 
+
+    }
+
+    public void setDistance_display(int distance){
+        //Set the distance display fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
+        final distanceDisplay disa = distanceDisplay.newInstance(distance); //Pass both the progress and the thumb position to be used in coordinating the seek bar's position
+
+        fragmentTransaction.add(R.id.distDisplay, disa,"distancedisplay").commit();
     }
 
     @Override
@@ -86,6 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_REQUEST_FINE_LOCATION);
             }
         }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
 
@@ -112,23 +120,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                             addCircleRadius(mMap, progress,currentLocation);
                             addText(mMap,progress,currentLocation);
+                            setFragment_display_box(Integer.toString(progress));
+                            setDistance_display(progress);
 
-                            setFragment(Integer.toString(progress));
                         }
-                        public void setFragment(String progress){
+                        public void setFragment_display_box(String progress){
+
                             //Get the x,y coordinates of the seek bar thumb
                             FragmentManager fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
 
                             float thumbPos = getSeekbarThumbPosition(); //Get the thumb seek bar position
+                            final textbox text = textbox.newInstance(progress,thumbPos); //Pass both the progress and the thumb position to be used in coordinating the seek bar's position
 
-                            textbox text = textbox.newInstance(progress,thumbPos); //Pass both the progress and the thumb position to be used in coordinating the seek bar's position
+                            //Set the runtime to be 10 seconds
 
-                            fragmentTransaction.replace(R.id.textDisplay, text);
+                            new CountDownTimer(2500, 1000) {
+
+                                public void onTick(long millisUntilFinished) {
+
+                                }
+
+                                public void onFinish() {
+                                    FragmentManager fragmentManager = getSupportFragmentManager();
+                                    Fragment textdisplay = fragmentManager.findFragmentByTag("textdisplay");
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
+                                    fragmentTransaction.remove(textdisplay);
+                                    fragmentTransaction.commit();
+                                }
+                            }.start();
+
+                            fragmentTransaction.replace(R.id.textDisplay, text,"textdisplay");
                             fragmentTransaction.addToBackStack(null);
                             fragmentTransaction.commit();
-                        }
 
+                        }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {
 
@@ -136,6 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         @Override
                         public void onStopTrackingTouch(SeekBar seekBar) {
+                            //Then we listen for the tag before we subtract out the fragment that we were listening to
 
                         }
                     });
@@ -147,7 +174,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addText(GoogleMap mMap, int progress, Location currentLocation) {
         //This function will add the
-
     }
 
     private float getSeekbarThumbPosition() {
@@ -195,12 +221,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 break;
             case MY_PERMISSION_REQUEST_COARSE_LOCATION:
-                break; 
+                break;
         }
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        if (uri.toString() == "save_changes"){
+            //Then we know that the changes hve been saved
+            //Navigate to another UI
+            userData.setRadiusDistance(location_radius.getProgress()); //Set the progress to be the one of the one that we want
+        }
     }
 }

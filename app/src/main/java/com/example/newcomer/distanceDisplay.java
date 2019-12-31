@@ -3,52 +3,55 @@ package com.example.newcomer;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.net.URI;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link textbox.OnFragmentInteractionListener} interface
+ * {@link distanceDisplay.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link textbox#newInstance} factory method to
+ * Use the {@link distanceDisplay#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class textbox extends Fragment {
+public class distanceDisplay extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2"; //defining the constant in orer to get the string paramater as needed
-    private static final int OFFSET = 475;
+    private EditText editText2;
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private float mParam2;
+    private int mParam1;
+    private ImageButton saveChanges;
 
     private OnFragmentInteractionListener mListener;
 
-    public textbox() {
+    public distanceDisplay() {
         // Required empty public constructor
     }
+    public interface OnMessageReadListener{
+        public void onMessageRead(String message);
 
+    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @return A new instance of fragment textbox.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment distanceDisplay.
      */
     // TODO: Rename and change types and number of parameters
-    public static textbox newInstance(String param1, float progress) {
-        textbox fragment = new textbox();
+    public static distanceDisplay newInstance(int param1) {
+        distanceDisplay fragment = new distanceDisplay();
         Bundle args = new Bundle();
-
-        args.putString(ARG_PARAM1, param1);
-        args.putFloat(ARG_PARAM2,progress);
+        args.putInt(ARG_PARAM1, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,24 +66,26 @@ public class textbox extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View inflate = inflater.inflate(R.layout.fragment_distance_display, container, false);
+        saveChanges = inflate.findViewById(R.id.imageButton4);
+        //Set the onclick listener for save changes
 
-        View inflate = inflater.inflate(R.layout.fragment_textbox, container, false);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getFloat(ARG_PARAM2); //This is the current progress position of the seekbar that we can use to then maniuplate the position of the text display as a reference
-            ImageView imageView = inflate.findViewById(R.id.imageView);
-            TextView textView = inflate.findViewById(R.id.textView10);
+            mParam1 = getArguments().getInt(ARG_PARAM1);
+            editText2 = inflate.findViewById(R.id.editText2);
+            editText2.setText(Integer.toString(mParam1));
+            saveChanges.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Now we set the onclick listener
+                    mListener.onFragmentInteraction(Uri.parse("save_changes"));
 
-            float currX = imageView.getX();
-            imageView.setX(mParam2 -OFFSET); //Primary offset value
-            textView.setX(mParam2 - OFFSET);
-
-            TextView distance = (TextView)inflate.findViewById(R.id.textView10);
-            distance.setText(mParam1); //Set the text of the
+                }
+            });
         }
+
         return inflate;
     }
-
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -117,6 +122,6 @@ public class textbox extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-       public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
     }
 }
