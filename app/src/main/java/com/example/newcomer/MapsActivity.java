@@ -6,16 +6,16 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import android.os.Bundle;
-
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,8 +26,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, distanceDisplay.OnFragmentInteractionListener,textbox.OnFragmentInteractionListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, distanceDisplay.OnFragmentInteractionListener,textbox.OnFragmentInteractionListener, CustomLocationPrompt.OnInputListener {
 
     private static final String TEXTDISPLAY_FRAGMENT = "Text Display";
 
@@ -39,8 +40,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean permissionIsGranted = false;
     private ImageButton backButton;
     private SeekBar location_radius;
-
-
+    private BottomNavigationView bottomNavigationView;
+    private Marker your_location;
+    public LatLng location_set; //Location of the user
     Circle circle;
 
     UserData userData;
@@ -68,16 +70,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Getting the relevant information for the bottom navigation feed where the user will be able to choose
+        //any of three options
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId()){
+                        case R.id.group_add:
+                            //Then we have that the user has selected "create a group"
+                            Intent intent = new Intent(MapsActivity.this,CreateGroup.class);
 
+                    }
+                    return false;
+            }
+        });
     }
-
     public void setDistance_display(int distance){
         //Set the distance display fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
         final distanceDisplay disa = distanceDisplay.newInstance(distance); //Pass both the progress and the thumb position to be used in coordinating the seek bar's position
-
         fragmentTransaction.add(R.id.distDisplay, disa,"distancedisplay").commit();
+
     }
 
     @Override
@@ -99,17 +114,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onSuccess(final Location location) {
+                if (location == null){
+                    //Then we call the API to get the location
+                    //prompt the user to enter their desired location
+                    Intent intent = new Intent(MapsActivity.this,FindLocation.class);
+                    startActivity(intent);
+                }
                 if (location != null){
                     //Get the last location
                     final Location currentLocation = location;
+                    LatLng currL = getLatestLocation(currentLocation);
 
-                    LatLng currL = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+                    float zoomLevel = getZoomLevel(location_radius.getProgress()); //Pass in the current radius of the circle
+                    setMarkerOptions(currL,"initialprogress");
+                    moveCamera(currL,"initialprogress",false);
 
-                    mMap.addMarker(new MarkerOptions().position(currL).title("Your location" ));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(currL));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currL, 10));
-
-                    addCircleRadius(mMap, location_radius.getProgress(),currentLocation) ;
+                    addCircleRadius(mMap, location_radius.getProgress(),currL) ;
 
                     location_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
@@ -117,9 +137,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //Then we want to update the map on the map
                             if (progress > 29){
                                 //Then we want to display the dialogue box telling them to set their custom
+                                displayCustomInputPrompt(); //And then return
+                                return;
                             }
-                            addCircleRadius(mMap, progress,currentLocation);
-                            addText(mMap,progress,currentLocation);
+                            LatLng currL = getLatestLocation(currentLocation);
+
+                            addCircleRadius(mMap, progress,currL);
                             setFragment_display_box(Integer.toString(progress));
                             setDistance_display(progress);
 
@@ -163,7 +186,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onStopTrackingTouch(SeekBar seekBar) {
                             //Then we listen for the tag before we subtract out the fragment that we were listening to
-
+                            LatLng currL = getLatestLocation(currentLocation);
+                            moveCamera(currL,"camupdate",false); //false = do not clear the map, true = clear the map
                         }
                     });
 
@@ -172,9 +196,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void addText(GoogleMap mMap, int progress, Location currentLocation) {
-        //This function will add the
+    private LatLng getLatestLocation(Location currentLocation) {
+        LatLng currL;
+        if (location_set != null){
+            currL =location_set;
+        }
+        else{
+            currL = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+        }
+        return currL;
     }
+
+    private float getZoomLevel(int radius) {
+        float zoomLevel = 0;
+        //This function returns the optimal zoom level based on the passed in radius
+
+        double scale = (radius * 1000) / 500; //Convert the radius to be metres (not km)
+        zoomLevel =(float) (16 - Math.log(scale) / Math.log(2));
+
+        return zoomLevel - 1.0f;
+    }
+
 
     private float getSeekbarThumbPosition() {
 
@@ -189,10 +231,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return thumbPos;
     }
 
-    private void addCircleRadius(GoogleMap mMap,int radius,Location currentLocation) {
+    private void addCircleRadius(GoogleMap mMap,int radius,LatLng currL) {
         //This function adds a circle to the map
 
-        LatLng currL = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+
         CircleOptions encirclement = new CircleOptions();//Create the circle
 
             encirclement.center(currL);
@@ -231,6 +273,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //Then we know that the changes hve been saved
             //Navigate to another UI
             userData.setRadiusDistance(location_radius.getProgress()); //Set the progress to be the one of the one that we want
+            Intent intent = new Intent(MapsActivity.this, FindLocation.class);
+            startActivity(intent);
         }
+        else if (uri.toString() == "change_location"){
+            displayCustomInputPrompt();
+        }
+        else if (uri.toString() == "reset_text"){
+            //The user has selected to edit the text
+        }
+    }
+
+    private void displayCustomInputPrompt() {
+        CustomLocationPrompt customLocationPrompt = CustomLocationPrompt.newInstance("Some Title");
+        customLocationPrompt.show(getSupportFragmentManager(),"insertlocation");
+    }
+
+    @Override
+    public void sendInput(LatLng latLng, String string) {
+            //Once we get the input then we will adjust the bounds as appropriately
+        moveCamera(latLng, "marker",true);
+        location_set = latLng;
+    }
+    public void moveCamera(LatLng latLng, String title, boolean clear){
+        //Move the camera to the appropriate location
+
+        if (clear == true){
+            mMap.clear(); //Erase all contents on the map before preceeding. At this point, we know there are already components on the map
+        }
+        float zoomLevel = getZoomLevel(location_radius.getProgress());
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoomLevel));
+        setMarkerOptions(latLng,title);
+
+    }
+
+    private void setMarkerOptions(LatLng latLng, String title) {
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(title);
+        mMap.addMarker(options);
     }
 }

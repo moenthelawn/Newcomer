@@ -3,14 +3,12 @@ package com.example.newcomer;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.net.URI;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import androidx.fragment.app.Fragment;
 
 
 /**
@@ -29,7 +27,7 @@ public class distanceDisplay extends Fragment {
     // TODO: Rename and change types of parameters
     private int mParam1;
     private ImageButton saveChanges;
-
+    private ImageButton changeLocation;
     private OnFragmentInteractionListener mListener;
 
     public distanceDisplay() {
@@ -44,7 +42,6 @@ public class distanceDisplay extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment distanceDisplay.
      */
     // TODO: Rename and change types and number of parameters
@@ -67,10 +64,21 @@ public class distanceDisplay extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflate = inflater.inflate(R.layout.fragment_distance_display, container, false);
+
         saveChanges = inflate.findViewById(R.id.imageButton4);
+        changeLocation = inflate.findViewById(R.id.imageButton2);
+
+        changeLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Then we will open up the dialog box that we created
+                mListener.onFragmentInteraction(Uri.parse("change_location"));
+                }
+        });
         //Set the onclick listener for save changes
 
         if (getArguments() != null) {
+
             mParam1 = getArguments().getInt(ARG_PARAM1);
             editText2 = inflate.findViewById(R.id.editText2);
             editText2.setText(Integer.toString(mParam1));
@@ -79,11 +87,10 @@ public class distanceDisplay extends Fragment {
                 public void onClick(View v) {
                     //Now we set the onclick listener
                     mListener.onFragmentInteraction(Uri.parse("save_changes"));
-
                 }
             });
-        }
 
+        }
         return inflate;
     }
     // TODO: Rename method, update argument and hook method into UI event
@@ -124,4 +131,5 @@ public class distanceDisplay extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }

@@ -1,15 +1,11 @@
 package com.example.newcomer;
 
 import android.content.Intent;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     private EditText editTextMobile;
@@ -45,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
                     editTextMobile.requestFocus();
                     return;
                 }
-
                 userData.setPhoneNumber(mobile);
 
                 Intent intent = new Intent(MainActivity.this, authentication.class);

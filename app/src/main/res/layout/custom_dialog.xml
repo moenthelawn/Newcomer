@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:orientation="vertical"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent" android:id="@+id/linearLayout">
+
+    <ImageView
+            android:layout_width="295dp"
+            android:layout_height="58dp"
+            android:src="@drawable/backdrop"
+            android:id="@+id/imageView4"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            android:scaleType="fitXY" android:background="@color/Black" android:backgroundTint="@color/Black"
+            app:srcCompat="@drawable/backdrop" app:layout_constraintHorizontal_bias="0.508"/>
+    <ImageButton
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/xsymbol"
+            android:id="@+id/imageButton9"
+            tools:srcCompat="@drawable/xsymbol"
+            android:scaleType="centerCrop" style="@style/Widget.AppCompat.ImageButton"
+            app:layout_constraintStart_toStartOf="@+id/autocomplete"
+            app:layout_constraintEnd_toEndOf="@+id/imageView4" app:layout_constraintTop_toTopOf="@+id/imageView4"
+            app:layout_constraintHorizontal_bias="1.0" app:layout_constraintVertical_bias="0.050000012"
+            android:layout_marginEnd="2dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+            android:backgroundTint="@android:color/transparent"/>
+    <fragment
+            android:id="@+id/autocomplete"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            android:layout_width="261dp"
+            android:layout_height="29dp"
+            app:layout_constraintStart_toStartOf="@+id/imageView4" app:layout_constraintEnd_toEndOf="@+id/imageView4"
+            app:layout_constraintTop_toTopOf="@+id/imageView4" app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+            app:layout_constraintVertical_bias="0.36" app:layout_constraintHorizontal_bias="0.06">
+    </fragment>
+</androidx.constraintlayout.widget.ConstraintLayout>
