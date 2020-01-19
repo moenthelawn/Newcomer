@@ -20,11 +20,11 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".FindLocation">
+        <activity android:name=".CreateGroup">
+
         </activity>
-        <activity
-                android:name=".CreateGroup"
-                android:label="@string/title_activity_create_group">
+        <activity android:name=".FindLocation">
+
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -46,6 +46,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
         <activity android:name=".signup">
         </activity>

@@ -12,12 +12,8 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link textbox.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link textbox#newInstance} factory method to
- * create an instance of this fragment.
+ This class will create the appropriate text box that can be used as a brief error prompt to display to the user
+
  */
 public class textbox extends Fragment {
     // TODO: Rename parameter arguments, choose names that match

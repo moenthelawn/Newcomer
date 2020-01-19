@@ -48,11 +48,11 @@ public class CustomLocationPrompt extends DialogFragment {
         //Set the paramaters as needed
         Places.initialize(getContext(),"AIzaSyAjGcF4XC-OEVJHKPmPefDUxGjxiSCbFK8");
         PlacesClient placesClient = Places.createClient(getContext());
+
         exitButton = inflate.findViewById(R.id.imageButton9);
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 getDialog().dismiss(); //Dismiss the dialog
             }
         });
@@ -78,6 +78,7 @@ public class CustomLocationPrompt extends DialogFragment {
                     lng =place.getLatLng().longitude; //Now we want to do a callback and set the location as appropriately for the main rame
                     mListener.sendInput(new LatLng(lat,lng), name);  //Set the appropriate call back
                     getDialog().dismiss();
+
                 }
             }
 

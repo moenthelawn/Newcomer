@@ -9,18 +9,19 @@
             android:src="@drawable/textdisplaybox1"
             android:layout_width="92dp"
             android:layout_height="76dp" android:id="@+id/imageView"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     <TextView
             android:text="35"
-            android:layout_width="103dp"
-            android:layout_height="43dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/textView10"
             android:fontFamily="sans-serif"
             android:textSize="30sp" android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="@+id/imageView" app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintStart_toStartOf="@+id/imageView" app:layout_constraintTop_toTopOf="@+id/imageView"
-            app:layout_constraintVertical_bias="0.75" app:layout_constraintHorizontal_bias="0.512"/>
+            app:layout_constraintStart_toStartOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/imageView" app:layout_constraintTop_toTopOf="@+id/imageView"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView" app:layout_constraintVertical_bias="0.65999997"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
