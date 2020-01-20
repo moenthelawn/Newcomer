@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class UserData extends Application {
     private String phoneNumber;
     private Integer radiusDistance;
-
+    private int MAX = 6; //max number of update statistics that send to the user at any given time
     private ArrayList<String> interests;
     private ArrayList<Pair> statistics;
 
@@ -30,11 +30,6 @@ public class UserData extends Application {
         //userID = generateUserID();
     }
 
-    ///private String generateUserID() {
-    //Generate the USER iD
-
-    //}
-
     @Override
     public Context getApplicationContext() {
         return super.getApplicationContext();
@@ -46,7 +41,7 @@ public class UserData extends Application {
         FirebaseApp.initializeApp(this);
 
         //mListener = (OnUserUpdateListener) this;
-        //mListener = (OnUserUpdateListener) this.getApplicationContext();
+        //mListener = (OnUserUpdateListener) this.getApplicationContext();\
         initializeDataBase();
         updateUserData();
     }
@@ -68,6 +63,7 @@ public class UserData extends Application {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     //Then we send this data over to the call back for the main apsp
                     for (DataSnapshot child : dataSnapshot.getChildren()){
+
                         String key = child.getKey().toString();
                         int val = Integer.parseInt(child.getValue().toString());
 
@@ -75,9 +71,7 @@ public class UserData extends Application {
                         statistics.add(pair);
 
                     }
-
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
@@ -89,8 +83,9 @@ public class UserData extends Application {
     }
     public ArrayList<String> getInterests_AutoComplete(){
         //This function will get the autocomplete for the array string
+        //In this we only want the top 6 most popular
         ArrayList<String> arrayList = new ArrayList<String >();
-        for (int i = 0; i < this.statistics.size();i++){
+        for (int i = 0; i < 6;i++){
             Pair pair = statistics.get(i) ;
             arrayList.add((String) pair.getFirst());
         }

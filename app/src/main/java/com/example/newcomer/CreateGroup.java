@@ -52,8 +52,9 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         multiAutoCompleteTextView = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTextView);
         data = new ArrayList<String>();
 
-        
+
         multiAutoCompleteTextView.setAdapter(aradapter);
+        multiAutoCompleteTextView.setError("Use comma(s) to separate your interests");
 
         multiAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,7 +62,9 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
                 //We need to add this in .
                 //We also need to find a way to add the lean meth
                 String curr = aradapter.getItem(position);
-
+                //1. Ensure that it has not already been aded
+                String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
+                updateTextBox(arr,"ADD");
             }
         });
 
@@ -74,7 +77,6 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -104,67 +106,61 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == 60){
-
-
-                    SpannableStringBuilder sb = new SpannableStringBuilder();
                     //THen we have hit the comma
                     String st =multiAutoCompleteTextView.getText().toString(); // multiAutoCompleteTextView.getText().toString();
                     String[] st_arry = st.split(",");
-
-                    if (data.size() == 0){
-                        createTextBox(st_arry[0],sb,true);
-                        data.add(st_arry[0]);
-                    }
-                    else{
-                        for (int i =0; i < st_arry.length;i++){
-                            createTextBox(st_arry[i],sb,true);
-                            if (i >= data.size()) {
-                                data.add(st_arry[i]);
-                            }
-                        }
-                    }
-                    multiAutoCompleteTextView.setSelection(multiAutoCompleteTextView.getText().length());
+                    updateTextBox(st_arry,"ADD");
 
                 }
                 else if (keyCode == 67){
                     //We need to update the current data array to be what is currently in teh multiautotextview displau
 
+                    multiAutoCompleteTextView.refreshDrawableState();
+
                     if (multiAutoCompleteTextView.getText().toString().length() != 0){
-
-                    String last = String.valueOf(multiAutoCompleteTextView.getText().toString().charAt(multiAutoCompleteTextView.length() -1));
-                    data = getUpdateDataArray(multiAutoCompleteTextView.getText().toString().split(","));
-
-                    if (last.equals(",") == true && data.size() != 0) {
-                        int index = getCursorIndex(data);
-                        data.remove(index);
-
                         String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
-                        SpannableStringBuilder sb = new SpannableStringBuilder();
-
-                        if (data.size() == 0) {
-                            //Then we reset
-                            createTextBox("", sb, true);
-                        }
-                        for (int i = 0; i < data.size(); i++) {
-                            createTextBox(data.get(i), sb, true);
-                            }
-
-                        }
+                        data = getUpdateDataArray(arr);
+                        //updateTextBox(arr,"REMOVE");
                     }
-
-
-
                 }
                 return false;
             }
         });
+    }
+
+    private void updateTextBox(String[] st_arry, String TYPE) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        if (data.size() == 0 && st_arry.length != 0){
+            createTextBox(st_arry[0],sb,true);
+            data.add(st_arry[0]);
+        }
+        else if(TYPE.equals("REMOVE") == true){
+            for (int i =0; i < data.size();i++){
+                createTextBox(data.get(i), sb, true);
+            }
+        }
+        else if (TYPE.equals("ADD") == true){
+            for (int i =0; i < st_arry.length;i++){
+                if (st_arry[i].equalsIgnoreCase(" ") == false) { //We do not want the blank index
+                    createTextBox(st_arry[i], sb, true);
+
+                    if (data.contains(st_arry[i]) == false) {
+                        data.add(st_arry[i]);
+                    }
+                }
+            }
+        }
+        multiAutoCompleteTextView.setSelection(multiAutoCompleteTextView.getText().length());
 
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        String val = aradapter.getItem(position);
 
+        String curr = aradapter.getItem(position);
+        //1. Ensure that it has not already been aded
+        String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
+        updateTextBox(arr,"ADD");
 
     }
 
@@ -237,13 +233,13 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         bd.setBounds(0, 0, bd.getIntrinsicWidth(), bd.getIntrinsicHeight());
         if (reset == false){
             sb.append(st);
-            sb.setSpan(new ImageSpan(bd), sb.length() - (test.length()), sb.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new ImageSpan(bd), sb.length() - (test.length()), sb.length() - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
             multiAutoCompleteTextView.setText(sb);
 
         }else{
 
             sb.append(st + ",");
-            sb.setSpan(new ImageSpan(bd), sb.length() - (test.length()+1), sb.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new ImageSpan(bd), sb.length() - (test.length()+1), sb.length() - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
 
             multiAutoCompleteTextView.setText(sb);
 
@@ -252,6 +248,7 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         multiAutoCompleteTextView.setSelection(multiAutoCompleteTextView.length());
 
     }
+
     private int count_string(String name, String var){
         int count =0;
         for (int i = 0; i < name.length();i++){
@@ -266,7 +263,7 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         //creating textview dynamically
         TextView tv = new TextView(this);
         tv.setText(cur);
-        tv.setTextSize(80);
+        tv.setTextSize(60);
         tv.setBackgroundResource(R.drawable.interest_button);
         tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.places_ic_search, 0);
         return tv;
@@ -280,6 +277,7 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         Canvas c = new Canvas(b);
         c.translate(-view.getScrollX(), -view.getScrollY());
         view.draw(c);
+
         view.setDrawingCacheEnabled(true);
         Bitmap cacheBmp = view.getDrawingCache();
         Bitmap viewBmp = cacheBmp.copy(Bitmap.Config.ARGB_8888, true);
@@ -290,7 +288,6 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
     public void showInput(){
         String input = multiAutoCompleteTextView.getText().toString();
         String[] singleInputs = input.split("\\s*,\\s*");
-
      }
 
 }
