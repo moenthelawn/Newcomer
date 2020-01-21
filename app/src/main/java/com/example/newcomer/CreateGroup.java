@@ -39,11 +39,11 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
         recyclerView = findViewById(R.id.recycler);
         adapter = new MyRecyclerViewAdapter(this, userData.getStatistics());
-
         int numColumns = 3;
-        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), numColumns));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, numColumns));
+
+        adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
-        adapter.setClickListener(CreateGroup.this);
 
         aradapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,userData.getInterests_AutoComplete());
@@ -51,7 +51,6 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         //TextView tv = createContactTextView();
         multiAutoCompleteTextView = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTextView);
         data = new ArrayList<String>();
-
 
         multiAutoCompleteTextView.setAdapter(aradapter);
         multiAutoCompleteTextView.setError("Use comma(s) to separate your interests");
@@ -154,15 +153,7 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
     }
 
-    @Override
-    public void onItemClick(View view, int position) {
 
-        String curr = aradapter.getItem(position);
-        //1. Ensure that it has not already been aded
-        String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
-        updateTextBox(arr,"ADD");
-
-    }
 
     private int getCursorIndex(ArrayList<String> dataf) {
         //This function will loop through and get the current index that the cursor is
@@ -290,4 +281,16 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         String[] singleInputs = input.split("\\s*,\\s*");
      }
 
+    @Override
+    public void onItemClick(View view, int position) {
+
+        String curr = aradapter.getItem(position);
+        //1. Ensure that it has not already been aded
+        multiAutoCompleteTextView.append(curr);
+        String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
+        //Now we see if this button is already added
+        if (data.contains(curr) == false) {
+            updateTextBox(arr, "ADD");
+        }
+    }
 }

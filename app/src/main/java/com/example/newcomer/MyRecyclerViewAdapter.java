@@ -1,6 +1,7 @@
 package com.example.newcomer;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +33,21 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // binds the data to the TextView in each cell
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Pair pair = mData.get(position);
+
         String g = (String) pair.getFirst();
         holder.myButton.setText(g);
+        holder.myButton.setTypeface(null, Typeface.BOLD);
+
+        holder.myButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Then we set the listener
+                mClickListener.onItemClick(v,position);
+            }
+        });
+
     }
 
     // total number of cells
@@ -68,6 +80,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // allows clicks events to be caught
     void setClickListener(ItemClickListener itemClickListener) {
+
         this.mClickListener = itemClickListener;
     }
     // parent activity will implement this method to respond to click events
