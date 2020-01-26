@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class UserData extends Application {
     private String phoneNumber;
     private Integer radiusDistance;
-    private int MAX = 6; //max number of update statistics that send to the user at any given time
+
     private ArrayList<String> interests;
     private ArrayList<Pair> statistics;
 
@@ -103,4 +103,10 @@ public class UserData extends Application {
     public Integer getRadiusDistance() {
         return this.radiusDistance;
     }
+
+    public int getMAX() { //Get the max array size that we can use which is based on the size of the array index that we currently set
+        return getInterests_AutoComplete().size(); //Get the size of the interests
+    }
+
+
 }

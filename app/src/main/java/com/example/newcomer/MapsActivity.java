@@ -64,7 +64,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         location_radius = (SeekBar) findViewById(R.id.seekBar);
         userData = (UserData) getApplicationContext();
 
-
         //Initialize the parameters around the user data
         location_radius.setKeyProgressIncrement(1);
 
@@ -94,6 +93,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         case R.id.group_add:
                             //Then we have that the user has selected "create a group"
                             //userData.updateUserData();
+                            //We want to be sure as well that it is fairly consistent for the current get location does not deviate
+                            LatLng currL = getLatestLocation(location_tot);
                             Intent intent = new Intent(MapsActivity.this,CreateGroup.class);
                             startActivity(intent);
                     }
@@ -102,6 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
     public void setDistance_display(int distance){
+
         //Set the distance display fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
@@ -188,7 +190,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     Fragment textdisplay = fragmentManager.findFragmentByTag("textdisplay");
                                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction(); //begin the transaction
                                     fragmentTransaction.remove(textdisplay);
-                                    fragmentTransaction.commit();
+                                    fragmentTransaction.commitAllowingStateLoss();
+
                                 }
                             }.start();
 
@@ -221,7 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currL =location_set;
         }
         else{
-            currL = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+            currL = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         }
         return currL;
     }
@@ -304,10 +307,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void sendDistanceUpdate(int progress){
 
         //The user has selected to edit the distance so we should update the radius distance
-
-        LatLng currL = getLatestLocation(location_tot);
-        addCircleRadius(mMap, progress,currL);
-        moveCamera(currL,"test",progress,false);
+        if (location_tot != null) {
+            LatLng currL = getLatestLocation(location_tot);
+            addCircleRadius(mMap, progress, currL);
+            moveCamera(currL, "test", progress, false);
+        }
     }
     private void displayCustomInputPrompt() {
         CustomLocationPrompt customLocationPrompt = CustomLocationPrompt.newInstance("Some Title");

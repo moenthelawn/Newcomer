@@ -1,18 +1,19 @@
 package com.example.newcomer;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.*;
 import android.text.style.ImageSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.MultiAutoCompleteTextView;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,11 +24,9 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
     private RecyclerView recyclerView;
     private MyRecyclerViewAdapter adapter;
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
-    private ArrayList<String> data;
-    private String holder;
-    private int deleteCount = 0;
-    private int countrrr =0;
+
     private ArrayAdapter<String> aradapter;
+    private GroupData groupData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +38,28 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
         recyclerView = findViewById(R.id.recycler);
         adapter = new MyRecyclerViewAdapter(this, userData.getStatistics());
+
         int numColumns = 3;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numColumns));
 
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
 
+        groupData = new GroupData(userData.getMAX()); ///This acts as the bind behind all of the data for the buttons
+
         aradapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,userData.getInterests_AutoComplete());
 
-        //TextView tv = createContactTextView();
+        //Add the divider to the app so that we can separate some of our components
+        DividerItemDecoration itemDecorator_vertical = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        DividerItemDecoration itemDecoration_horizontal = new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL);
+
+        itemDecorator_vertical.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
+        itemDecorator_vertical.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
+
+        recyclerView.addItemDecoration(itemDecorator_vertical);
+
         multiAutoCompleteTextView = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTextView);
-        data = new ArrayList<String>();
 
         multiAutoCompleteTextView.setAdapter(aradapter);
         multiAutoCompleteTextView.setError("Use comma(s) to separate your interests");
@@ -58,12 +67,16 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         multiAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 //We need to add this in .
                 //We also need to find a way to add the lean meth
                 String curr = aradapter.getItem(position);
+
                 //1. Ensure that it has not already been aded
                 String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
-                updateTextBox(arr,"ADD");
+                if (groupData.getArrayList_Data().contains(curr) == false){
+                    updateTextBox(arr,"ADD");
+                }
             }
         });
 
@@ -72,10 +85,26 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
                 InputType.TYPE_TEXT_FLAG_MULTI_LINE |
                 InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+
         multiAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                multiAutoCompleteTextView.setError(null);
+                if (s.toString().split(",").length >= 3){
+                    Button bu = findViewById(R.id.button4);
+                    bu.setVisibility(View.VISIBLE);
+                    bu.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //Intent intent = new Intent();
+                        }
+                    });
+                }
+                else{
+                    Button bu = findViewById(R.id.button4);
+                    bu.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
@@ -86,6 +115,9 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
             @Override
             public void afterTextChanged(Editable s) {
                 String curr = s.toString();
+
+                multiAutoCompleteTextView.setError(null);
+
                 if (curr.length() > 1){
                     String last = String.valueOf(curr.charAt(curr.length() - 1));
                     String secondLast = String.valueOf(curr.charAt(curr.length() - 2));
@@ -116,11 +148,14 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
                     multiAutoCompleteTextView.refreshDrawableState();
 
-                    if (multiAutoCompleteTextView.getText().toString().length() != 0){
+                    //if (multiAutoCompleteTextView.getText().toString().length() != 0){
                         String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
-                        data = getUpdateDataArray(arr);
+                        //updateButtonElements(arr);
+                        // ;
+                        groupData.setArrayList_Data(getUpdateDataArray(arr));
+
                         //updateTextBox(arr,"REMOVE");
-                    }
+                    //}
                 }
                 return false;
             }
@@ -129,31 +164,30 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
 
     private void updateTextBox(String[] st_arry, String TYPE) {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        if (data.size() == 0 && st_arry.length != 0){
+
+        if (groupData.getArrayList_Data().size() == 0 && st_arry.length != 0){
             createTextBox(st_arry[0],sb,true);
-            data.add(st_arry[0]);
+            groupData.appendArrayList_Data(st_arry[0]);
         }
         else if(TYPE.equals("REMOVE") == true){
-            for (int i =0; i < data.size();i++){
-                createTextBox(data.get(i), sb, true);
-            }
+                for (int i = 0; i < groupData.getArrayList_Data().size(); i++) {
+                    createTextBox(groupData.getElement_Data(i), sb, true);
+                }
+
         }
         else if (TYPE.equals("ADD") == true){
             for (int i =0; i < st_arry.length;i++){
                 if (st_arry[i].equalsIgnoreCase(" ") == false) { //We do not want the blank index
                     createTextBox(st_arry[i], sb, true);
 
-                    if (data.contains(st_arry[i]) == false) {
-                        data.add(st_arry[i]);
+                    if (groupData.getArrayList_Data().contains(st_arry[i]) == false) {
+                        groupData.appendArrayList_Data(st_arry[i]);
                     }
                 }
             }
         }
         multiAutoCompleteTextView.setSelection(multiAutoCompleteTextView.getText().length());
-
     }
-
-
 
     private int getCursorIndex(ArrayList<String> dataf) {
         //This function will loop through and get the current index that the cursor is
@@ -198,7 +232,7 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
     private String getWordDiscrepancies(String[] arr, ArrayList<String> data) {
         for (int i= 0; i < arr.length;i++){
             String curr = arr[i];
-            if (data.contains(curr) == false){
+            if (groupData.getArrayList_Data().contains(curr) == false){
                 //Then we know that we do not have this string
                 return curr;
             }
@@ -219,9 +253,11 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
     private void createTextBox(String st,SpannableStringBuilder sb,boolean reset){
 
         String test = st;  //sb.toString();
-        TextView tv = createContactTextView(test); //Create the custom textview for the partiular elelment
+        TextView tv = createContactTextView(test.toUpperCase()); //Create the custom textview for the partiular elelment
+
         BitmapDrawable bd = (BitmapDrawable) convertViewToDrawable(tv);
         bd.setBounds(0, 0, bd.getIntrinsicWidth(), bd.getIntrinsicHeight());
+
         if (reset == false){
             sb.append(st);
             sb.setSpan(new ImageSpan(bd), sb.length() - (test.length()), sb.length() - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -255,8 +291,9 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         TextView tv = new TextView(this);
         tv.setText(cur);
         tv.setTextSize(60);
+
         tv.setBackgroundResource(R.drawable.interest_button);
-        tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.places_ic_search, 0);
+        tv.setCompoundDrawablesWithIntrinsicBounds(0, 0,0, 0);
         return tv;
     }
     public static Object convertViewToDrawable(View view) {
@@ -281,16 +318,54 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         String[] singleInputs = input.split("\\s*,\\s*");
      }
 
+    @SuppressLint("ResourceAsColor")
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position,Button currButton) {
 
-        String curr = aradapter.getItem(position);
+        //String curr = adapter.getItem(position);
+
+        //Duplicate this datas
+        String curr = currButton.getText().toString();
+        currButton.setWidth(0);
+
         //1. Ensure that it has not already been aded
-        multiAutoCompleteTextView.append(curr);
-        String[] arr = multiAutoCompleteTextView.getText().toString().split(",");
-        //Now we see if this button is already added
-        if (data.contains(curr) == false) {
-            updateTextBox(arr, "ADD");
+        String text = multiAutoCompleteTextView.getText().toString();
+
+        if (text.length() != 0){
+            String lastDigit = String.valueOf(text.charAt(text.length() - 1));
+            if (lastDigit.equals(",") == true){
+                text += curr;
+            }else{
+                text = text + "," + curr;
+            }
+        }else{
+            text = curr;
         }
+        String[] arr = text.split(",");
+        //Now we see if this button is already added
+        //if (data.contains(curr) == false) {
+        if (groupData.getArrayList_Data().contains(curr) == false){
+            multiAutoCompleteTextView.setError(null);
+            updateTextBox(arr,"ADD");
+        }
+
+    }
+
+    @Override
+    public void setStrokeWidth(Button currButton, boolean clicked) {
+        GradientDrawable gradientDrawable = (GradientDrawable) currButton.getBackground();
+
+        if (clicked == true){
+            gradientDrawable.setStroke(15, ContextCompat.getColor(this,R.color.DarkCyan));
+        }
+        else{
+            //Otherwise it hasn't been clicked
+            gradientDrawable.setStroke(5,ContextCompat.getColorStateList(this,R.color.DarkCyan));
+        }
+        currButton.setBackground(gradientDrawable);
+    }
+
+    private void setStrokeColor(Button currButton,boolean clicked) {
+
     }
 }
