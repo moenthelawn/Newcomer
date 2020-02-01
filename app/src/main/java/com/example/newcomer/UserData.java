@@ -15,7 +15,7 @@ public class UserData extends Application {
 
     private ArrayList<String> interests;
     private ArrayList<Pair> statistics;
-
+    private String userName;
     private String userID = "";
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
@@ -23,10 +23,10 @@ public class UserData extends Application {
     private DatabaseReference mRef;
 
     public UserData() {
-        radiusDistance = 3; //Default value for the radius of the current map that can be used to sync with other users
-        interests = new ArrayList<String>();
-        statistics = new ArrayList<Pair>();
-
+        this.radiusDistance = 3; //Default value for the radius of the current map that can be used to sync with other users
+        this.interests = new ArrayList<String>();
+        this.statistics = new ArrayList<Pair>();
+        this.userName = "";
         //userID = generateUserID();
     }
 
@@ -51,7 +51,7 @@ public class UserData extends Application {
         //FirebaseApp.initializeApp(getApplicationContext());
 
         this.mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
+        this.mDatabase = FirebaseDatabase.getInstance();
 
     }
     public void updateUserData(){
@@ -109,4 +109,11 @@ public class UserData extends Application {
     }
 
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }

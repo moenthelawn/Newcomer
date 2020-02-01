@@ -20,7 +20,11 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".GroupSettings">
+        <activity android:name=".GroupTiming">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity android:name=".CreateGroup">
         </activity>
@@ -41,15 +45,11 @@
         <activity
                 android:name=".MapsActivity"
                 android:label="@string/title_activity_maps">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".signup">
         </activity>
         <activity android:name=".profile">
+
         </activity>
         <activity android:name=".authentication">
         </activity>

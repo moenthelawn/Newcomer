@@ -5,34 +5,27 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".profile">
+        tools:context=".profile" android:elevation="5dp" android:background="@color/Black">
 
     <View
-            android:layout_width="255dp"
-            android:layout_height="219dp"
+            android:layout_width="256dp"
+            android:layout_height="232dp"
             android:id="@+id/view" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.35000002"/>
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.35000002"
+            android:layout_marginBottom="24dp" android:layout_marginTop="8dp" android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
     <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="0dp" tools:srcCompat="@tools:sample/avatars"
+            android:layout_width="254dp"
+            android:layout_height="234dp" tools:srcCompat="@tools:sample/avatars"
             android:id="@+id/imageButton"
             android:scaleType="centerCrop" android:background="#FFFFFF"
             app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintEnd_toEndOf="@+id/view" app:layout_constraintBottom_toBottomOf="@+id/view"
             app:layout_constraintTop_toTopOf="@+id/view" app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintVertical_bias="0.0"/>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="53dp"
-            android:layout_height="60dp"
-            android:clickable="true" app:srcCompat="@android:drawable/ic_menu_edit"
-            android:id="@+id/edit" app:layout_constraintEnd_toEndOf="@+id/imageButton"
-            app:layout_constraintBottom_toBottomOf="@+id/imageButton"
-            app:layout_constraintStart_toStartOf="@+id/imageButton"
-            app:layout_constraintTop_toTopOf="@+id/imageButton" app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintHorizontal_bias="0.02"/>
     <TextView
-            android:text="Name"
+            android:text="First Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView6" android:textSize="24sp"
@@ -46,9 +39,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView8" android:textSize="24sp"
             app:layout_constraintStart_toStartOf="@+id/location"
-            app:layout_constraintEnd_toEndOf="@+id/location" app:layout_constraintBottom_toBottomOf="@+id/location"
-            app:layout_constraintTop_toBottomOf="@+id/name" app:layout_constraintVertical_bias="0.36"
-            app:layout_constraintHorizontal_bias="0.0"/>
+            app:layout_constraintEnd_toEndOf="@+id/location"
+            app:layout_constraintTop_toBottomOf="@+id/name" app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0" app:layout_constraintBottom_toTopOf="@+id/location"/>
     <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
@@ -59,37 +52,43 @@
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.39999998"/>
     <EditText
             android:layout_width="309dp"
-            android:layout_height="60dp"
+            android:layout_height="48dp"
+            android:background="@drawable/underline"
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/name"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider" app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.13999999"/>
+            app:layout_constraintVertical_bias="0.110000014"/>
     <EditText
             android:layout_width="309dp"
-            android:layout_height="60dp"
+            android:layout_height="48dp"
+            android:background="@drawable/underline"
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/location"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider" app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.554"/>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="54dp"
-            android:layout_height="53dp"
-            android:clickable="true" app:srcCompat="?attr/homeAsUpIndicator"
-            android:id="@+id/back"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-            app:layout_constraintVertical_bias="0.0" app:layout_constraintHorizontal_bias="0.0"/>
-    <Button
-            android:text="Submit"
-            android:layout_width="215dp"
-            android:layout_height="52dp"
-            android:id="@+id/button2" android:background="@color/colorAccent"
+            app:layout_constraintVertical_bias="0.39"/>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            app:menu="@menu/mainnav"
+            android:outlineSpotShadowColor="@color/LightGrey"
+            app:elevation="18dp"
+            android:background="@android:color/white"
+            app:itemBackground="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider" app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.88"/>
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="1.0"
+            android:id="@+id/bottomNavigationView">
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+    <ImageButton
+            android:layout_width="52dp"
+            android:layout_height="56dp" app:srcCompat="@drawable/backsymbol"
+            android:id="@+id/imageButton5"
+            android:background="@drawable/backsymbol" android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/divider" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.0" app:layout_constraintHorizontal_bias="0.0"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

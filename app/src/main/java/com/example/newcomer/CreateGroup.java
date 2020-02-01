@@ -1,6 +1,7 @@
 package com.example.newcomer;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.text.*;
 import android.text.style.ImageSpan;
 import android.view.KeyEvent;
+
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.kofigyan.stateprogressbar.StateProgressBar;
 
 import java.util.ArrayList;
 
@@ -45,8 +48,12 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
 
-        groupData = new GroupData(userData.getMAX()); ///This acts as the bind behind all of the data for the buttons
+        StateProgressBar stateProgressBar = (StateProgressBar) findViewById(R.id.your_state_progress_bar_id);
+        String[] progressBarSettings = {"Interests", "Timing","Description"};
+        stateProgressBar.setStateDescriptionData(progressBarSettings);
 
+
+        groupData = new GroupData(userData.getMAX()); ///This acts as the bind behind all of the data for the buttons
         aradapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,userData.getInterests_AutoComplete());
 
@@ -55,12 +62,11 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         DividerItemDecoration itemDecoration_horizontal = new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL);
 
         itemDecorator_vertical.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
-        itemDecorator_vertical.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
+        itemDecoration_horizontal.setDrawable(ContextCompat.getDrawable(this, R.drawable.divider));
 
         recyclerView.addItemDecoration(itemDecorator_vertical);
 
         multiAutoCompleteTextView = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTextView);
-
         multiAutoCompleteTextView.setAdapter(aradapter);
         multiAutoCompleteTextView.setError("Use comma(s) to separate your interests");
 
@@ -85,33 +91,17 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
                 InputType.TYPE_TEXT_FLAG_MULTI_LINE |
                 InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-
         multiAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 multiAutoCompleteTextView.setError(null);
-                if (s.toString().split(",").length >= 3){
-                    Button bu = findViewById(R.id.button4);
-                    bu.setVisibility(View.VISIBLE);
-                    bu.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //Intent intent = new Intent();
-                        }
-                    });
-                }
-                else{
-                    Button bu = findViewById(R.id.button4);
-                    bu.setVisibility(View.INVISIBLE);
-                }
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 String curr = s.toString();
@@ -131,6 +121,25 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
                         }
                     }
                 }
+                int length_arr = multiAutoCompleteTextView.getText().toString().split(",").length;
+                TextView next = findViewById(R.id.next);
+                if (length_arr >= 3){
+                    next.setTextColor(ContextCompat.getColor(CreateGroup.this,R.color.Red));
+                    next.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //Then we start the next intent which is related to the Timing of the event (when it will take place)
+                            Intent intent = new Intent(CreateGroup.this, GroupTiming.class);
+                            startActivity(intent);
+                        }
+                    });
+                    //Then we can set hte button color of the next to be that of red
+                }
+                else{
+                    next.setTextColor(ContextCompat.getColor(CreateGroup.this,R.color.LightGrey)); //Then we want to grey it out because it is not important at this phase
+                }
+
+
             }
         });
         multiAutoCompleteTextView.setOnKeyListener(new View.OnKeyListener() {
@@ -323,8 +332,8 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
     public void onItemClick(View view, int position,Button currButton) {
 
         //String curr = adapter.getItem(position);
-
         //Duplicate this datas
+
         String curr = currButton.getText().toString();
         currButton.setWidth(0);
 
@@ -348,7 +357,6 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
             multiAutoCompleteTextView.setError(null);
             updateTextBox(arr,"ADD");
         }
-
     }
 
     @Override
@@ -356,11 +364,11 @@ public class CreateGroup extends AppCompatActivity implements MyRecyclerViewAdap
         GradientDrawable gradientDrawable = (GradientDrawable) currButton.getBackground();
 
         if (clicked == true){
-            gradientDrawable.setStroke(15, ContextCompat.getColor(this,R.color.DarkCyan));
+            gradientDrawable.setStroke(15, ContextCompat.getColor(this,R.color.Black));
         }
         else{
             //Otherwise it hasn't been clicked
-            gradientDrawable.setStroke(5,ContextCompat.getColorStateList(this,R.color.DarkCyan));
+            gradientDrawable.setStroke(5,ContextCompat.getColorStateList(this,R.color.LightGrey));
         }
         currButton.setBackground(gradientDrawable);
     }

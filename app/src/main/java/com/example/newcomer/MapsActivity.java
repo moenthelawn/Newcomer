@@ -8,12 +8,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -85,22 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Getting the relevant information for the bottom navigation feed where the user will be able to choose
         //any of three options
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                    switch (menuItem.getItemId()){
-                        case R.id.group_add:
-                            //Then we have that the user has selected "create a group"
-                            //userData.updateUserData();
-                            //We want to be sure as well that it is fairly consistent for the current get location does not deviate
-                            LatLng currL = getLatestLocation(location_tot);
-                            Intent intent = new Intent(MapsActivity.this,CreateGroup.class);
-                            startActivity(intent);
-                    }
-                    return false;
-            }
-        });
+
     }
     public void setDistance_display(int distance){
 

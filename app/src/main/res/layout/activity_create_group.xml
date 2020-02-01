@@ -5,43 +5,49 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         tools:context=".CreateGroup">
 
     <TextView
-            android:text="What Are Your Interests?"
+            android:text="Select your group interests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView16"
             android:fontFamily="sans-serif"
-            android:textSize="24sp" android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="30sp" android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintVertical_bias="0.32999998"
             app:layout_constraintBottom_toTopOf="@+id/multiAutoCompleteTextView"/>
 
     <TextView
             android:text="Popular"
-            android:textStyle="italic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_width="105dp"
+
+            android:layout_height="34dp"
             android:id="@+id/textView14"
             android:fontFamily="sans-serif"
             android:textSize="18sp" android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/multiAutoCompleteTextView"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.04000002"
+            app:layout_constraintVertical_bias="1.0"
             app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="18dp"
-            android:layout_marginStart="24dp"/>
+            android:layout_marginStart="8dp" app:layout_constraintBottom_toTopOf="@+id/recycler"/>
     <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="372dp"
+            android:layout_width="0dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:layout_height="wrap_content"
+            android:outlineProvider="bounds"
+            android:elevation="1dp"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" android:id="@+id/recycler"
-            android:layout_marginStart="24dp" android:layout_marginEnd="24dp"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintTop_toBottomOf="@+id/textView14"/>
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/multiAutoCompleteTextView" android:layout_marginTop="78dp"/>
 
     <MultiAutoCompleteTextView
             android:layout_width="wrap_content"
@@ -51,22 +57,58 @@
             android:completionThreshold="1"
             android:id="@+id/multiAutoCompleteTextView" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.16000003"/>
-    <Button
-            android:text="Group Settings"
-            android:visibility="invisible"
-            android:backgroundTint="@color/DarkCyan"
-            android:bottomRightRadius="20dp"
-            android:bottomLeftRadius="20dp"
-            android:topLeftRadius="20dp"
-            android:topRightRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.26999998"/>
+
+    <com.kofigyan.stateprogressbar.StateProgressBar
+            android:id="@+id/your_state_progress_bar_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button4"
+            android:background="@color/white"
+            android:elevation="3dp"
+            app:spb_currentStateNumber="one"
+            app:spb_maxStateNumber="four"
+            app:spb_stateBackgroundColor="#BDBDBD"
+            app:spb_stateForegroundColor="@color/DarkCyan"
+            app:spb_stateNumberBackgroundColor="#808080"
+            app:spb_stateNumberForegroundColor="#eeeeee"
+            app:spb_currentStateDescriptionColor="@color/DarkCyan"
+            app:spb_stateDescriptionColor="#808080"
+            app:spb_animateToCurrentProgressState="true"
+            app:spb_checkStateCompleted="true"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"/>
+    <TextView
+            android:text="Prev"
+            android:layout_width="wrap_content"
+            android:background="@color/white"
+            android:textColor="@color/LightGrey"
+            android:elevation="3dp"
+            android:paddingLeft="2dp"
+            android:padding="2dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/prev" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler" android:textSize="18sp"
-            android:layout_marginBottom="16dp" android:layout_marginTop="24dp"/>
+            app:layout_constraintBottom_toTopOf="@+id/your_state_progress_bar_id"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0" android:textSize="20sp" android:layout_marginStart="1dp"
+            android:layout_marginBottom="1dp"/>
+    <TextView
+            android:text="Next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/LightGrey"
+            android:background="@color/white"
+            android:textStyle="bold"
+            android:paddingLeft="4dp"
+            android:padding="4dp"
+            android:id="@+id/next"
+            android:elevation="3dp"
+            android:textSize="20sp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/your_state_progress_bar_id"
+            app:layout_constraintVertical_bias="1.0" app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginBottom="1dp" android:layout_marginEnd="1dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
