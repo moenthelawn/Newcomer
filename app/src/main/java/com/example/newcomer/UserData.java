@@ -19,6 +19,7 @@ public class UserData extends Application {
     private String userID = "";
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
+
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mRef;
 
@@ -43,7 +44,12 @@ public class UserData extends Application {
         //mListener = (OnUserUpdateListener) this;
         //mListener = (OnUserUpdateListener) this.getApplicationContext();\
         initializeDataBase();
-        updateUserData();
+        updateUserData(new FireabaseCallback() {
+            @Override
+            public void onCallBack(ArrayList<Pair> statisticsf) {
+                ArrayList<Pair> currList;
+            }
+        });
     }
 
     private void initializeDataBase() {
@@ -54,7 +60,14 @@ public class UserData extends Application {
         this.mDatabase = FirebaseDatabase.getInstance();
 
     }
-    public void updateUserData(){
+    private interface FireabaseCallback{
+        void onCallBack(ArrayList<Pair> statisticsf);
+    }
+    private void readData(FireabaseCallback fireabaseCallback){
+        updateUserData(fireabaseCallback);
+
+    }
+    public void updateUserData(final FireabaseCallback fireabaseCallback){
 
          //Otherwise, we would go and read in the top list of current statistics
             final DatabaseReference mStatistics = mDatabase.getReference("statistics");
@@ -71,11 +84,13 @@ public class UserData extends Application {
                         statistics.add(pair);
 
                     }
+                    fireabaseCallback.onCallBack(statistics);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
+
     }
 
     public ArrayList<Pair> getStatistics(){
@@ -86,8 +101,13 @@ public class UserData extends Application {
         //In this we only want the top 6 most popular
         ArrayList<String> arrayList = new ArrayList<String >();
         for (int i = 0; i < 6;i++){
-            Pair pair = statistics.get(i) ;
-            arrayList.add((String) pair.getFirst());
+            try{
+                Pair pair = statistics.get(i) ;
+                arrayList.add((String) pair.getFirst());
+            }catch (Exception e){
+                return null;
+            }
+
         }
         return arrayList;
     }
