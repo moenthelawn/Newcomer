@@ -7,8 +7,8 @@
                                                    android:layout_height="match_parent" android:id="@+id/linearLayout">
 
     <ImageView
-            android:layout_width="295dp"
-            android:layout_height="58dp"
+            android:layout_width="291dp"
+            android:layout_height="45dp"
             android:src="@drawable/backdrop"
             android:id="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"

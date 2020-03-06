@@ -10,17 +10,21 @@ import com.google.firebase.database.*;
 import java.util.ArrayList;
 
 public class UserData extends Application {
-    private String phoneNumber;
     private Integer radiusDistance;
 
     private ArrayList<String> interests;
     private ArrayList<Pair> statistics;
+
+    private String phoneNumber;
     private String userName;
     private String userID = "";
+
     private FirebaseDatabase mDatabase;
     private FirebaseAuth mAuth;
-
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private UserEvent userEvent; //This class will be used to hold the user's event that they either join or create
+
     private DatabaseReference mRef;
 
     public UserData() {
@@ -110,6 +114,9 @@ public class UserData extends Application {
 
         }
         return arrayList;
+    }
+    public void createGroup(){
+        this.userEvent = new UserEvent(); //Create this event
     }
 
     public void setPhoneNumber(String mobile) {
