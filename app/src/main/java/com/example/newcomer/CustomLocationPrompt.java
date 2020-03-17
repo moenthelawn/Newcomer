@@ -1,6 +1,7 @@
 package com.example.newcomer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.util.Arrays;
+import java.util.List;
+
 
 public class CustomLocationPrompt extends DialogFragment {
 
@@ -56,20 +60,26 @@ public class CustomLocationPrompt extends DialogFragment {
                 getDialog().dismiss(); //Dismiss the dialog
             }
         });
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getFragmentManager().findFragmentById(R.id.autocomplete); //Create the object
+        AutocompleteSupportFragment autocompleteFragment  = (AutocompleteSupportFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        int AUTOCOMPLETE_REQUEST_CODE = 1;
+
+    // Set the fields to specify which types of place data to
+    // return after the user has made a selection.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(getContext());
+
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(
-                Place.Field.NAME,
-                Place.Field.LAT_LNG
-        ));
 
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
+        autocompleteFragment.setOnPlaceSelectedListener(new com.google.android.libraries.places.widget.listener.PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                // TODO: Get info about the selected place.
-                String name = place.getName();
+                String name = place.getName().toString();
 
                 double lat, lng;
 

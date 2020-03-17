@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import androidx.fragment.app.Fragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 
 /**
@@ -26,11 +28,12 @@ public class distanceDisplay extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 2 ;
+    private static final int RESULT_OK = 1 ;
     private EditText editText2;
     // TODO: Rename and change types of parameters
     private int mParam1;
-    private ImageButton saveChanges;
-    private ImageButton changeLocation;
+
     private EditText changeDistance;
     private OnFragmentInteractionListener mListener;
 
@@ -67,18 +70,12 @@ public class distanceDisplay extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflate = inflater.inflate(R.layout.fragment_distance_display, container, false);
+        Places.initialize(getContext(),"AIzaSyAjGcF4XC-OEVJHKPmPefDUxGjxiSCbFK8");
+        PlacesClient placesClient = Places.createClient(getContext());
 
         changeDistance = inflate.findViewById(R.id.editText2);
-        saveChanges = inflate.findViewById(R.id.imageButton4);
-        changeLocation = inflate.findViewById(R.id.imageButton2);
 
-        changeLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Then we will open up the dialog box that we created
-                mListener.onFragmentInteraction(Uri.parse("change_location"));
-                }
-        });
+
 
         //Set the onclick listener for save changes
         if (getArguments() != null) {
@@ -103,14 +100,14 @@ public class distanceDisplay extends Fragment {
                         distance = 0;
                     }
 
-                    if (distance > 2000){
+                    if (distance > 30){
 
                         //Please enter a new distance if the distance is going to be greater than 2000 km
-                        editText2.setError("Please select a new location with distances greater than 2000km");
+                        editText2.setError("Distance cannot be chosen over 30 km");
                         editText2.requestFocus();
 
                     }
-                    else if (s.toString() != ""){
+                    else if (s.toString().equals("") == false){
                         mListener.sendDistanceUpdate(distance);
                     }
                 }
@@ -130,13 +127,7 @@ public class distanceDisplay extends Fragment {
             else {
                 editText2.setText(Integer.toString(mParam1));
             }
-            saveChanges.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Now we set the onclick listener
-                    mListener.onFragmentInteraction(Uri.parse("save_changes"));
-                }
-            });
+
         }
         return inflate;
     }
@@ -144,7 +135,7 @@ public class distanceDisplay extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(uri,null);
         }
     }
 
@@ -177,7 +168,8 @@ public class distanceDisplay extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri,LatLng latLng);
         void sendDistanceUpdate(int progress);
     }
+
 }

@@ -133,9 +133,9 @@
             app:layout_constraintTop_toBottomOf="@+id/textView18" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
     <EditText
-            android:layout_width="48dp"
+            android:layout_width="100dp"
             android:background="@drawable/underline"
-            android:layout_height="38dp"
+            android:layout_height="32dp"
             android:inputType="number"
             android:windowSoftInputMode="stateHidden"
             android:ems="10"
@@ -153,8 +153,8 @@
             app:layout_constraintEnd_toEndOf="@+id/editText4"
             android:textSize="22sp"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
-            app:layout_constraintVertical_bias="0.0"/>
+            android:layout_marginTop="16dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+            app:layout_constraintVertical_bias="0.0" android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
     <TextView
             android:text="Choose the event start time"
             android:layout_width="wrap_content"
@@ -164,9 +164,10 @@
             app:layout_constraintStart_toStartOf="@+id/editText5"
             app:layout_constraintEnd_toEndOf="@+id/editText5"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout5" app:layout_constraintVertical_bias="0.0"
-            android:layout_marginTop="8dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout6"/>
+            android:layout_marginTop="8dp" app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
     <TextView
-            android:text="Estimate the event length"
+            android:text="Estimate the event end time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView20"
@@ -174,7 +175,7 @@
             app:layout_constraintStart_toStartOf="@+id/editText7"
             app:layout_constraintEnd_toEndOf="@+id/editText7" app:layout_constraintTop_toBottomOf="@+id/linearLayout6"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout7" app:layout_constraintVertical_bias="0.0"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp" android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
     <TextView
             android:text="Choose the event age range"
             android:layout_width="wrap_content"
@@ -184,7 +185,8 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
             android:layout_marginTop="1dp"
             app:layout_constraintBottom_toTopOf="@+id/textView19" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.0"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
     <TextView
             android:text="TextView"
             android:layout_width="wrap_content"
@@ -205,21 +207,12 @@
             app:layout_constraintBottom_toBottomOf="@+id/rangeSeekbar5"
             app:layout_constraintTop_toTopOf="@+id/rangeSeekbar5" android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"/>
-    <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner2"
-            android:text="NEW PREVIEW TEXT"
-            app:layout_constraintTop_toTopOf="@+id/editText7" app:layout_constraintBottom_toBottomOf="@+id/editText7"
-            app:layout_constraintStart_toEndOf="@+id/editText7" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.24"
-            android:layout_marginEnd="8dp" android:visibility="visible"/>
     <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
             android:id="@+id/rangeSeekbar5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:corner_radius="10"
-            app:min_value="0"
+            app:min_value="18"
             app:max_value="100"
             app:left_thumb_color="@color/DefaultCyan"
             app:right_thumb_color="@color/DefaultCyan"

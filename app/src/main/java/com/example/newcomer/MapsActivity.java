@@ -8,10 +8,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.*;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -28,12 +26,21 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Arrays;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, distanceDisplay.OnFragmentInteractionListener,textbox.OnFragmentInteractionListener, CustomLocationPrompt.OnInputListener {
 
     private static final String TEXTDISPLAY_FRAGMENT = "Text Display";
-
+    private LatLng intent_location; //This holds the location's intent
+    private TextView groupMembers;
     private static final int MY_PERMISSION_REQUEST_FINE_LOCATION = 101;
     private static final int MY_PERMISSION_REQUEST_COARSE_LOCATION = 102 ;
     private GoogleMap mMap;
@@ -41,10 +48,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     int MY_LOCATION_REQUEST_CODE;
     private boolean permissionIsGranted = false;
-
+    private int AUTOCOMPLETE_REQUEST_CODE = 2;
     private ImageButton backButton;
     private SeekBar location_radius;
     private BottomNavigationView bottomNavigationView;
+
+    private TextView next;
+    private TextView prev;
 
     public LatLng location_set; //Location of the user
     public Location location_tot;
@@ -56,14 +66,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //Initialize all of the variables ......
 
+        Places.initialize(this,"AIzaSyAjGcF4XC-OEVJHKPmPefDUxGjxiSCbFK8");
+        PlacesClient placesClient = Places.createClient(this);
+
+        //Initialize all of the variables ......
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         location_radius = (SeekBar) findViewById(R.id.seekBar);
         userData = (UserData) getApplicationContext();
+        try{
+            Bundle args = getIntent().getParcelableExtra("latlng");
+            intent_location= args.getParcelable("latlng");
+        }catch(Exception io){
+
+        }
+        groupMembers = findViewById(R.id.textView7);
 
         //Initialize the parameters around the user data
         location_radius.setKeyProgressIncrement(1);
+        prev = findViewById(R.id.prev3);
+        prev.setTextColor(ContextCompat.getColor(MapsActivity.this,R.color.red));
 
         int radius = userData.getRadiusDistance();
 
@@ -73,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         location_radius.setMax(30); //100 kms
         location_radius.setProgress(radius);
+        setTextRadius_title(radius); //this sets the title to have the radius of the current title
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -83,8 +106,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Getting the relevant information for the bottom navigation feed where the user will be able to choose
         //any of three options
 
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), GroupDescription.class);
+                startActivity(intent);
+            }
+        });
 
     }
+
+    private void setTextRadius_title(int radius) {
+        String txt = "Group members must be within ";
+        txt = txt + String.valueOf(radius) + "km to join the event";
+        groupMembers.setText(txt);
+
+    }
+
     public void setDistance_display(int distance){
 
         //Set the distance display fragment
@@ -146,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng currL = getLatestLocation(location_tot);
 
                             addCircleRadius(mMap, progress,currL);
-
+                            setTextRadius_title(progress);
                             setFragment_display_box(Integer.toString(progress));
                             setDistance_display(progress);
 
@@ -203,7 +241,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LatLng getLatestLocation(Location currentLocation) {
         LatLng currL;
-        if (location_set != null){
+        if (intent_location != null){
+            currL = intent_location;
+        }
+        else if (location_set != null ){
             currL =location_set;
         }
         else{
@@ -259,6 +300,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     //Permissions granted
                     permissionIsGranted = true;
+
                 }else{
                     //permission is denied
                     permissionIsGranted = false;
@@ -271,21 +313,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        if (uri.toString() == "save_changes"){
-            //Then we know that the changes hve been saved
-            //Navigate to another UI
-            userData.setRadiusDistance(location_radius.getProgress()); //Set the progress to be the one of the one that we want
-            Intent intent = new Intent(MapsActivity.this, FindLocation.class);
-            startActivity(intent);
+    public void onFragmentInteraction(Uri uri, LatLng latLng) {
+
+         if (uri.toString() == "change_location"){
+             location_set = latLng;
+             displayCustomInputPrompt();
         }
-        else if (uri.toString() == "change_location"){
-            displayCustomInputPrompt();
-        }
-        else if (uri.toString() == "reset_text"){
+
+        else if (uri.toString() == "button_press"){
             //The user has selected to edit the text
+             //Then we will open up the dialog box that we created
+             startAutocompleteActivity();
+
+             // Set the fields to specify which types of place data to
+             // return after the user has made a selection.
+
         }
     }
+
+    private void startAutocompleteActivity() {
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN,
+                Arrays.asList(Place.Field.ID,Place.Field.NAME))
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                .build(this);
+
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
+    }
+
     @Override
     public void sendDistanceUpdate(int progress){
 
@@ -328,4 +385,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(options);
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

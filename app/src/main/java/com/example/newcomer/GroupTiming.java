@@ -7,10 +7,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.*;
+import android.view.Window;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
@@ -30,12 +33,11 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
     private EditText eventTime;
     private EditText eventDate;
     private EditText eventLength;
+
     private EditText minAge;
     private EditText maxAge;
 
     private CrystalRangeSeekbar ageRange;
-
-    private Spinner timeFrameDrop;
 
     private TextView next;
     private TextView timeStamp;
@@ -60,7 +62,7 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
         TextView eventStartTime;
         TextView eventLength;
 
-        public PageText() { //This class is a holder for all of the text paramaters that we hold in the UI
+        public PageText() { //This classs is a holder for all of the text paramaters that we hold in the UI
             this.number1 = findViewById(R.id.textView23);//Number 1 Bubble
             this.number2 = findViewById(R.id.textView24);//Number 2 Bubble
             this.number3 = findViewById(R.id.textView25);//Number 3 Bubble
@@ -147,9 +149,14 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_group_timing);
+        getSupportActionBar().hide();
 
         pageText = new PageText();
+
         //userData = (UserData) getApplicationContext(); //This will get the overarching class that manages the user data
         //userData.createGroup();
 
@@ -182,22 +189,16 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
 
         eventDate.setShowSoftInputOnFocus(false);
         eventTime.setShowSoftInputOnFocus(false);
+        eventLength.setShowSoftInputOnFocus(false);
+
         //minAge.set
         disableSoftInputFromAppearing(eventDate);
         next = findViewById(R.id.next2);
 
         //eventDate.setText("2"); //Set the default ot be 2 (hours) at the beginning which is a safe estimate for how long the event will take place
-
-        timeFrameDrop = findViewById(R.id.spinner2);
-        String[] rr = {"minutes","hours"};
-
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,rr);
-        timeFrameDrop.setAdapter(myAdapter);
         
         setTimeVisibility("INVISIBLE");
         setEstLengthVisibility("INVISIBLE"); 
-        
-        //timeFrameDrop.setPromptId(0);
 
         timeStamp = findViewById(R.id.textView19);
         timeStamp.setVisibility(View.INVISIBLE);
@@ -224,23 +225,17 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
 
         EditText est_edit = findViewById(R.id.editText7);
 
-
-        Spinner spinner = findViewById(R.id.spinner2);
-
         if (invisible.equals("INVISIBLE") == true){
             //Then we set all of the paramaters to be invisible
             pageText.estEventLength.setVisibility(View.INVISIBLE);
             est_edit.setVisibility(View.INVISIBLE);
 
-            spinner.setVisibility(View.INVISIBLE);
             layout3.setVisibility(View.INVISIBLE);
             pageText.number3.setVisibility(View.INVISIBLE);
-            timeFrameDrop.setVisibility(View.INVISIBLE);
         }
         else{
             pageText.estEventLength.setVisibility(View.VISIBLE);
             est_edit.setVisibility(View.VISIBLE);
-            spinner.setVisibility(View.VISIBLE);
             est_edit.requestFocus();
             layout3.setVisibility(View.VISIBLE);
 
@@ -248,12 +243,11 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
             pageText.setNumberColours(3);
             pageText.setTextBold(3);
             est_edit.requestFocus();
-            timeFrameDrop.setVisibility(View.VISIBLE);
 
-            est_edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            est_edit.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    displayAgeRange();
+                public boolean onTouch(View v, MotionEvent event) {
+                    displayTimeDialog("endtime");
                     return false;
                 }
             });
@@ -299,7 +293,7 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     //Then we will collaborate the findings
-                    displayTimeDialog();
+                    displayTimeDialog("starttime");
                     return false;
                 }
 
@@ -307,8 +301,6 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
 
         }
     }
-
-
 
     public void displayCalendarDialog(){
 
@@ -321,7 +313,6 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
             newFragment.show(getSupportFragmentManager(), "datepicker");
 
         }
-
     }
 
     public void displayAgeRange(){
@@ -360,6 +351,7 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
                         //Before we move on to the next location, we are going to want to update the user database
 
                         Intent intent = new Intent(GroupTiming.this,GroupDescription.class);
+
                         startActivity(intent);
                 }
 
@@ -385,14 +377,15 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
 
 
     @SuppressLint("ClickableViewAccessibility")
-    public void displayTimeDialog(){
-        Fragment timepicker = getSupportFragmentManager().findFragmentByTag("timepicker");
+    public void displayTimeDialog(String timeParamater){
+
+        Fragment timepicker = getSupportFragmentManager().findFragmentByTag(timeParamater);
         DialogFragment timepicker_fram = (DialogFragment) timepicker;
 
         if (timepicker_fram == null){
 
-            DialogFragment newFragment = new TimePickerFragment();
-            newFragment.show(getSupportFragmentManager(), "timepicker");
+            DialogFragment newFragment = new TimePickerFragment(timeParamater);
+            newFragment.show(getSupportFragmentManager(), timeParamater);
 
         }
 
@@ -402,10 +395,10 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
 
     }
     public void displayTextString(){
+
         String date_text = eventDate.getText().toString();
         String time_text = eventTime.getText().toString();
         String estTime_text = eventLength.getText().toString();
-        int spinnerId = timeFrameDrop.getId();
 
         if (date_text.equals("") == false && time_text.equals("") == false && estTime_text.equals("") == false){
             timeStamp.setVisibility(View.VISIBLE);
@@ -428,7 +421,7 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
     }
 
     @Override
-    public void sendDate_clock(TimePicker view, int hourOfDay, int minute) {
+    public void sendDate_clock(TimePicker view, int hourOfDay, int minute,String paramType) {
         SimpleDateFormat newFormat = new SimpleDateFormat("hh:mm a");
         Date date = new Date();
 
@@ -438,9 +431,19 @@ public class GroupTiming extends AppCompatActivity implements CalendarDialogFrag
         layout2.setVisibility(View.VISIBLE);
 
         String timeText = newFormat.format(date);
-        eventTime.setText(timeText);
+
+        if (paramType.equals("starttime") == true){
+            //Then we know that they have selected the start time,
+            eventTime.setText(timeText);
+            setEstLengthVisibility("VISIBLE");
+        }
+
+        else {
+            eventLength.setText(timeText);
+            displayAgeRange();
+        }
+
         displayTextString();
-        setEstLengthVisibility("VISIBLE");
     }
 
 

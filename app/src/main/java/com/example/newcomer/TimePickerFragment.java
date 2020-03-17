@@ -13,7 +13,12 @@ import java.util.Calendar;
 
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
-        private OnInputListener mListener;
+    private String paramType;
+    public TimePickerFragment(String paramType) {
+        this.paramType = paramType;
+    }
+
+    private OnInputListener mListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -35,13 +40,19 @@ public class TimePickerFragment extends DialogFragment
                 DateFormat.is24HourFormat(getActivity()));
     }
 
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute,String paramType) {
         // Do something with the time chosen by the user
-        mListener.sendDate_clock(view,hourOfDay,minute);
+
     }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        mListener.sendDate_clock(view,hourOfDay,minute,this.paramType);
+    }
+
     public interface OnInputListener {
         // TODO: Update argument type and name
-        void sendDate_clock(TimePicker view, int hourOfDay, int minute);
+        void sendDate_clock(TimePicker view, int hourOfDay, int minute, String paramType);
 
     }
 
